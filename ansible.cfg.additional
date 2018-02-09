@@ -1,0 +1,8 @@
+# Ansible additional config
+add to /etc/ansible/ansible.cfg
+
+host_key_checking = False
+gathering = smart
+fact_caching = jsonfile
+fact_caching_connection = /tmp/
+fact_caching_timeout = 32000
