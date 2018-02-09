@@ -1,0 +1,10 @@
+---
+# This playbook deploys redis instances in staging site.
+#
+- name: test creating config on docker containers - test environment
+  hosts: redisservers
+  remote_user: root
+  # gather_facts: no
+
+  roles:
+    - redis_cluster

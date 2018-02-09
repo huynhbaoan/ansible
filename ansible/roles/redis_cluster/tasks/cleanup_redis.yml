@@ -1,0 +1,45 @@
+---
+- name: Try to shutdown running Redis gracefully
+  shell:
+    netstat -nlpt | grep redis | awk '{print $7}' | cut -d / -f 1 | xargs -r kill -15
+  args:
+    executable: /bin/bash
+    
+- name: Kill Redis forcefully
+  shell:
+    netstat -nlpt | grep redis | awk '{print $7}' | cut -d / -f 1 | xargs -r kill -9
+  args:
+    executable: /bin/bash
+
+- name: cleanup run directory of Redis
+  file:
+    path: "{{ redis_run_path }}"
+    state: absent
+
+- name: cleanup log directory of Redis
+  file:
+    path: "{{ redis_log_path }}"
+    state: absent
+
+- name: cleanup cluster directory of Redis
+  file:
+    path: "{{ redis_cluster_path }}"
+    state: absent
+
+- name: cleanup install directory of Redis
+  shell:
+    rm -rf /opt/*redis*
+  args:
+    executable: /bin/bash
+    
+- name: cleanup Redis configuration
+  shell:
+    rm -rf /etc/*redis*
+  args:
+    executable: /bin/bash
+    
+- name: cleanup Redis init script
+  shell:
+    rm -rf /etc/init.d/*redis*
+  args:
+    executable: /bin/bash

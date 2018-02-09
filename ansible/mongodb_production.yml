@@ -1,0 +1,12 @@
+---
+# This playbook deploys mongodb instances in production site.
+#
+- name: set ulimits on production hosts
+  hosts: mongodbservers
+  remote_user: an.hb
+  become: true
+  become_method: sudo
+  become_user: root
+
+  roles:
+    - mongodb

@@ -1,0 +1,12 @@
+---
+- name: Check Redis cluster config
+  shell:    
+    redis-trib.rb check {{ item.ip }}:{{ item.port }}
+  args:
+    executable: /bin/bash
+  when: ansible_default_ipv4.address == "{{ item.ip }}"
+  with_items: "{{ redis_cluster_master }}"
+  register: return_output
+- name: DEBUG - Check Redis cluster config
+  debug:
+    var: return_output

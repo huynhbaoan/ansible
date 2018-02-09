@@ -1,0 +1,17 @@
+---
+- name: Create Redis cluster
+  shell:    
+    yes yes | redis-trib.rb create --replicas 1 {{ redis_cluster[0].ip }}:{{ redis_cluster[0].port }} \
+      {{ redis_cluster[1].ip }}:{{ redis_cluster[1].port }} \
+      {{ redis_cluster[2].ip }}:{{ redis_cluster[2].port }} \
+      {{ redis_cluster[3].ip }}:{{ redis_cluster[3].port }} \
+      {{ redis_cluster[4].ip }}:{{ redis_cluster[4].port }} \
+      {{ redis_cluster[5].ip }}:{{ redis_cluster[5].port }} 
+  args:
+    executable: /bin/bash
+  when: ansible_default_ipv4.address == "{{ item.ip }}"
+  with_items: "{{ redis_cluster_master }}"
+  register: return_output
+- name: DEBUG - Create Redis cluster
+  debug:
+    var: return_output

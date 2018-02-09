@@ -1,0 +1,114 @@
+---
+- name: install the 'Development tools' package group
+  yum:
+    name: "@Development tools"
+    state: present
+
+- name: install tcl package 
+  yum:
+    name: tcl
+    state: present
+
+- name: Create group for Redis user
+  group:
+    name: redis
+    state: present
+
+- name: Create user to run Redis
+  user:
+    name: redis
+    shell: /sbin/nologin
+    group: redis
+    #append: yes
+    state: present
+
+- name: create log directory for Redis
+  file:
+    path: "{{ redis_log_path }}"
+    state: directory
+    owner: root
+    group: root
+    
+- name: create run directory for Redis
+  file:
+    path: "{{ redis_run_path }}"
+    state: directory
+    owner: root
+    group: root
+    
+- name: create directory for Redis cluster
+  file:
+    path: "{{ redis_cluster_path }}"
+    state: directory
+    owner: root
+    group: root
+    
+- name: Download Redis binary packages
+  get_url:
+    url: http://download.redis.io/releases/{{ redis_version }}.tar.gz
+    dest: /opt/
+    force: yes
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
+    timeout: 5
+
+- name: Extract Redis archive into /opt/
+  unarchive:
+    remote_src: yes
+    src: /opt/{{ redis_version }}.tar.gz
+    dest: /opt/
+
+- name: Run make Redis
+  make:
+    chdir: /opt/{{ redis_version }}
+  params:
+      NUM_THREADS: "{{ cpu_core }}"
+
+# - name: Run make test Redis  
+  # shell:
+    # make test -j {{ cpu_core }}
+  # args:
+    # executable: /bin/bash
+    # chdir: /opt/{{ redis_version }}/
+  # register: return_output
+# - name: DEBUG - Run make test Redis
+  # debug:
+    # var: return_output
+
+- name: Install Redis
+  make:
+    chdir: /opt/{{ redis_version }}
+    target: install
+    params:
+      NUM_THREADS: "{{ cpu_core }}"
+  become: yes
+
+- name: Install Redis management script
+  copy:
+    remote_src: yes
+    src: /opt/{{ redis_version }}/src/redis-trib.rb
+    dest: /usr/local/bin/
+    force: yes
+    mode: u=rwx,g=rx,o=rx
+
+- name: Download and install RVM 
+  shell:    
+      curl -sSL https://get.rvm.io | bash
+  args:
+    executable: /bin/bash
+    chdir: /opt/
+  register: return_output
+- name: DEBUG - Download and install RVM 
+  debug:
+    var: return_output
+
+- name: Register RVM and install Ruby Redis 
+  shell:    
+      source /etc/profile.d/rvm.sh && rvm reload && rvm requirements run && rvm install 2.4.2 && gem install redis
+  args:
+    executable: /bin/bash
+  register: return_output
+- name: DEBUG - Register RVM and install Ruby Redis 
+  debug:
+    var: return_output

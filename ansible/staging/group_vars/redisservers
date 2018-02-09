@@ -1,0 +1,14 @@
+redis_version: redis-4.0.7
+redis_log_path: /var/log/redis
+redis_run_path: /var/run/redis
+redis_cluster_path: /var/lib/redis/cluster
+redis_cluster:  
+  - {port: "30001", ip: "172.17.0.7"}
+  - {port: "30001", ip: "172.17.0.8"}
+  - {port: "30001", ip: "172.17.0.9"}
+  - {port: "30002", ip: "172.17.0.7"}
+  - {port: "30002", ip: "172.17.0.8"}
+  - {port: "30002", ip: "172.17.0.9"}
+cpu_core: 4
+redis_cluster_master:  
+  - {port: "30001", ip: "172.17.0.7"}

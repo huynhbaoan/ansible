@@ -1,0 +1,9 @@
+---
+# This playbook deploys mongodb instances in staging site.
+#
+- name: set ulimits on docker containers - test environment
+  hosts: mongodbservers
+  remote_user: root
+
+  roles:
+    - mongodb

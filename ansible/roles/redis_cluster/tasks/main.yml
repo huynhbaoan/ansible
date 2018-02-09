@@ -1,0 +1,7 @@
+---
+- import_tasks: cleanup_redis.yml
+- import_tasks: install_redis.yml
+- import_tasks: config_redis.yml
+- import_tasks: restart_redis.yml
+- import_tasks: create_redis_cluster.yml
+- import_tasks: check_redis_cluster.yml

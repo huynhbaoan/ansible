@@ -1,0 +1,100 @@
+---
+#These tasks set ulimits for production server
+#
+- name: Set mongod nofile hard limit
+  pam_limits:
+    domain: mongod
+    limit_type: hard
+    limit_item: nofile
+    value: 65000
+    use_max: yes
+    comment: mongod hard limit number of open files
+
+- name: Set mongod nofile soft limit
+  pam_limits:
+    domain: mongod
+    limit_type: soft
+    limit_item: nofile
+    value: 65000
+    use_max: yes
+    comment: mongod soft limit number of open files
+
+- name: Set mongod nproc soft limit
+  pam_limits:
+    domain: mongod
+    limit_type: soft
+    limit_item: nproc
+    value: 65000
+    use_max: yes
+    comment: mongod soft limit number of processes
+
+- name: Set mongod nproc hard limit
+  pam_limits:
+    domain: mongod
+    limit_type: hard
+    limit_item: nproc
+    value: 65000
+    use_max: yes
+    comment: mongod hard limit number of processes
+
+- name: Set mongod fsize limit
+  pam_limits:
+    domain: mongod
+    limit_type: '-'
+    limit_item: fsize
+    value: unlimited
+    use_max: yes
+    comment: mongod fsize limit
+
+- name: Set mongod cpu time limit
+  pam_limits:
+    domain: mongod
+    limit_type: '-'
+    limit_item: cpu
+    value: unlimited
+    use_max: yes
+    comment: mongod cpu time limit
+
+#- name: Set mongod memory locked size limit
+#  pam_limits:
+#    domain: mongod 
+#    limit_type: '-'
+#    limit_item: memlock
+#    value: 64
+#    use_max: yes
+#    comment: mongod memory locked size limit
+# Not working, changing this prevent user login
+
+- name: Set mongod max memory size limit
+  pam_limits:
+    domain: mongod
+    limit_type: '-'
+    limit_item: rss
+    value: unlimited
+    #use_max: yes
+    comment: mongod max memory size limit
+
+- name: Set mongod max virtual memory size limit
+  pam_limits:
+    domain: mongod
+    limit_type: '-'
+    limit_item: as
+    value: unlimited
+    #use_max: yes
+    comment: mongod max virtual memory size limit
+
+- name: Set sysctl vm.overcommit_memory
+  sysctl:
+    name: vm.overcommit_memory
+    value: 0
+    state: present
+    ignoreerrors: yes
+    reload: yes
+
+- name: Set sysctl fs.file-max
+  sysctl:
+    name: fs.file-max
+    value: 1280000
+    state: present
+    ignoreerrors: yes
+    reload: yes
