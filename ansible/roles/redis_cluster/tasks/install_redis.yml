@@ -22,27 +22,54 @@
     #append: yes
     state: present
 
-- name: create log directory for Redis
-  file:
-    path: "{{ redis_log_path }}"
-    state: directory
-    owner: root
-    group: root
-    
 - name: create run directory for Redis
   file:
     path: "{{ redis_run_path }}"
     state: directory
     owner: root
     group: root
-    
+
+- name: create log directory for Redis
+  file:
+    path: "{{ redis_log_realpath }}"
+    state: directory
+    recurse: yes
+    owner: root
+    group: root
+
+- name: link log directory for Redis
+  file:
+    path: "{{ redis_log_path }}"
+    src: "{{ redis_log_realpath }}"
+    force: yes
+    state: link
+    owner: root
+    group: root
+
+- name: create directory for Redis cluster
+  file:
+    path: "{{ redis_cluster_realpath }}"
+    state: directory
+    recurse: yes
+    owner: root
+    group: root
+
 - name: create directory for Redis cluster
   file:
     path: "{{ redis_cluster_path }}"
     state: directory
+    recurse: yes
     owner: root
     group: root
-    
+- name: link directory for Redis cluster
+  file:
+    path: "{{ redis_cluster_path }}"
+    src: "{{ redis_cluster_realpath }}"
+    state: link
+    force: yes
+    owner: root
+    group: root
+
 - name: Download Redis binary packages
   get_url:
     url: http://download.redis.io/releases/{{ redis_version }}.tar.gz
@@ -63,11 +90,11 @@
   make:
     chdir: /opt/{{ redis_version }}
   params:
-      NUM_THREADS: "{{ cpu_core }}"
+      NUM_THREADS: "{{ redis_cpu_core }}"
 
 # - name: Run make test Redis  
   # shell:
-    # make test -j {{ cpu_core }}
+    # make test -j {{ redis_cpu_core }}
   # args:
     # executable: /bin/bash
     # chdir: /opt/{{ redis_version }}/
@@ -81,7 +108,7 @@
     chdir: /opt/{{ redis_version }}
     target: install
     params:
-      NUM_THREADS: "{{ cpu_core }}"
+      NUM_THREADS: "{{ redis_cpu_core }}"
   become: yes
 
 - name: Install Redis management script

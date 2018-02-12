@@ -11,6 +11,12 @@
   args:
     executable: /bin/bash
 
+- name: Delete Redis pid file to guarantee a sucessful restart
+  shell:
+    rm -rf {{ redis_run_path }}/*redis*
+  args:
+    executable: /bin/bash
+    
 - name: Start all Redis instance    
   service:
     name: redis_{{ item.port }}

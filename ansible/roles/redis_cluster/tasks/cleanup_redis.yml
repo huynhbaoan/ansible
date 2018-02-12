@@ -16,14 +16,24 @@
     path: "{{ redis_run_path }}"
     state: absent
 
-- name: cleanup log directory of Redis
+- name: unlink log directory of Redis
   file:
     path: "{{ redis_log_path }}"
     state: absent
 
-- name: cleanup cluster directory of Redis
+- name: cleanup log directory of Redis
+  file:
+    path: "{{ redis_log_realpath }}"
+    state: absent
+
+- name: unlink cluster directory of Redis
   file:
     path: "{{ redis_cluster_path }}"
+    state: absent
+
+- name: cleanup cluster directory of Redis
+  file:
+    path: "{{ redis_cluster_realpath }}"
     state: absent
 
 - name: cleanup install directory of Redis
